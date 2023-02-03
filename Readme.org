@@ -1,0 +1,112 @@
+* mkCli
+
+This is a simple nix library to help generate development environment CLIs for
+projects.
+
+** Motivation
+
+I often find myself wanting to create development environment scripts for common
+things like testing, linting, auto-fixing code, etc.  Further, these tasks are
+composed of sub-tasks that are determined by the languages I'm working with,
+tooling nuances for the project, etc.  However, in general, I pretty much always
+want the ability to group those commands in logical ways and parallelize the
+runs of those commands (in addition to running those commands manually) -- for
+instance, I want to be able to run some singular ~test~ command and spawn off
+processes for each language-specific testing utility.
+
+This library provides a simple nix utility for generating a such a cli script.
+
+** Example
+
+Consider the following ~shell.nix~:
+
+#+BEGIN_SRC nix
+  let
+    mkCli = builtins.fetchTarball "https://github.com/cprussin/mkCli/archive/main.tar.gz";
+
+    mkCli-overlay = import "${mkCli}/overlay.nix";
+
+    pkgs = import <nixpkgs> { overlays = [mkCli-overlay]; };
+
+    cli = pkgs.lib.mkCli "cli" {
+      _noAll = true;
+
+      test = {
+        lint = {
+          nix = "${pkgs.statix}/bin/statix check .";
+          js = "${pkgs.nodejs}/bin/npm exec eslint **/**";
+        };
+        dead-code.nix = "${pkgs.deadnix}/bin/deadnix .";
+        format = {
+          nix = "${pkgs.alejandra}/bin/alejandra --check .";
+          js = "${pkgs.nodejs}/bin/npm exec prettier --check .";
+        };
+      };
+
+      fix = {
+        lint = {
+          nix = "${pkgs.statix}/bin/statix fix **/**";
+          js = "${pkgs.nodejs}/bin/npm exec eslint --fix";
+        };
+        dead-code.nix = "${pkgs.deadnix}/bin/deadnix -e .";
+        format = {
+          nix = "${pkgs.alejandra}/bin/alejandra .";
+          js = "${pkgs.nodejs}/bin/npm exec prettier --write .";
+        };
+      };
+    };
+  in
+    pkgs.mkShell {
+      buildInputs = [
+        pkgs.git
+        pkgs.nodejs
+        cli
+      ];
+    }
+#+END_SRC
+
+Then, inside your nix shell you'll be able to run the following:
+
+#+BEGIN_SRC sh
+  > cli -h              # Get a help string for the entire CLI
+  > cli test -h         # Get a help string for just the test sub-tree of the CLI
+  > cli test            # Run all test commands in parallel (with a prefix prepended to output)
+  > cli test lint nix   # Only run the `statix check .` command
+#+END_SRC
+
+** Installation
+
+You can either use the overlay provided in [[./overlay.nix]], which will inject
+~mkCli~ onto ~pkgs.lib~:
+
+#+BEGIN_SRC nix
+  let
+    mkCli-src = builtins.fetchTarball "https://github.com/cprussin/mkCli/archive/main.tar.gz";
+    mkCli-overlay = import "${mkCli-src}/overlay.nix";
+    pkgs = import <nixpkgs> { overlays = [mkCli-overlay]; };
+    cli = pkgs.lib.mkCli "cli" { ... };
+  in { ... }
+#+END_SRC
+
+Or you can just import the ~mkCli~ function from [[./default.nix]] and use it
+directly:
+
+#+BEGIN_SRC nix
+  let
+    mkCli = import (builtins.fetchTarball "https://github.com/cprussin/mkCli/archive/main.tar.gz");
+    cli = mkCli "cli" { ... };
+  in { ... }
+#+END_SRC
+
+Totally your preference.
+
+** Usage
+
+Pretty simple, just pass ~mkCli~ two arguments: the first is a string which
+specifies the name of the CLI script, and the second is an attrset of either
+attrsets or strings.  The second argument should be a tree that represents what
+the CLI should do.  String values indicate leaf nodes, attrset values indicate
+sub-commands.  If you do not specify ~_noAll = true;~ on a particular node, then
+an ~all~ command will be generated which will run all descendant leaf nodes in
+parallel (this will also become the default command if no argument is passed,
+instead of showing help for that node).
