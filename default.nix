@@ -66,7 +66,7 @@
       }: let
         doPrefix = "sed \"s/^/$(printf \"${prefixStr pos prefix}\")/\"";
       in [
-        "${cmd} 2> >(${doPrefix} >&2) 1> >(${doPrefix}) &"
+        "${cmd} 2>&1 | ${doPrefix} &"
         "pids+=($!)"
       ])
       (getCommands prefix options);
