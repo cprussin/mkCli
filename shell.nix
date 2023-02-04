@@ -26,15 +26,15 @@
     _noAll = true;
 
     test = {
-      lint.nix = "${pkgs.statix}/bin/statix check .";
-      dead-code.nix = "${pkgs.deadnix}/bin/deadnix .";
-      format.nix = "${pkgs.alejandra}/bin/alejandra --check .";
+      lint = "${pkgs.statix}/bin/statix check .";
+      dead-code = "${pkgs.deadnix}/bin/deadnix .";
+      format = "${pkgs.alejandra}/bin/alejandra --check .";
     };
 
     fix = {
-      lint.nix = "${pkgs.statix}/bin/statix fix .";
-      dead-code.nix = "${pkgs.deadnix}/bin/deadnix -e .";
-      format.nix = "${pkgs.alejandra}/bin/alejandra .";
+      lint = "${pkgs.statix}/bin/statix fix .";
+      dead-code = "${pkgs.deadnix}/bin/deadnix -e .";
+      format = "${pkgs.alejandra}/bin/alejandra .";
     };
   };
 in
