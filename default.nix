@@ -32,6 +32,12 @@
     colors.purple
     colors.cyan
     colors.white
+    colors.boldRed
+    colors.boldGreen
+    colors.boldYellow
+    colors.boldBlue
+    colors.boldPurple
+    colors.boldCyan
   ];
 
   indent = map (str: "  " + str);
