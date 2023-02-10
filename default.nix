@@ -14,17 +14,17 @@
     cyan = mkAnsiColorFn "0;36";
     white = mkAnsiColorFn "0;37";
 
-    bold_black = mkAnsiColorFn "1;30";
-    bold_red = mkAnsiColorFn "1;31";
-    bold_green = mkAnsiColorFn "1;32";
-    bold_yellow = mkAnsiColorFn "1;33";
-    bold_blue = mkAnsiColorFn "1;34";
-    bold_purple = mkAnsiColorFn "1;35";
-    bold_cyan = mkAnsiColorFn "1;36";
-    bold_white = mkAnsiColorFn "1;37";
+    boldBlack = mkAnsiColorFn "1;30";
+    boldRed = mkAnsiColorFn "1;31";
+    boldGreen = mkAnsiColorFn "1;32";
+    boldYellow = mkAnsiColorFn "1;33";
+    boldBlue = mkAnsiColorFn "1;34";
+    boldPurple = mkAnsiColorFn "1;35";
+    boldCyan = mkAnsiColorFn "1;36";
+    boldWhite = mkAnsiColorFn "1;37";
   };
 
-  command_colors = [
+  commandColors = [
     colors.red
     colors.green
     colors.yellow
@@ -55,9 +55,9 @@
           ]
           else getCommands "${prefix'} ${key}" value
       );
-    color = builtins.elemAt command_colors;
+    color = builtins.elemAt commandColors;
     prefixStr = pos: prefix:
-      ((color pos) (exactWidthString 20 prefix)) + (colors.bold_white " │ ");
+      ((color pos) (exactWidthString 20 prefix)) + (colors.boldWhite " │ ");
     allCommands =
       lib.imap0
       (pos: {
@@ -75,7 +75,7 @@
 
   mkHelpOptions = option: value:
     if builtins.isString value
-    then ["${colors.bold_white "${option}:"} ${value}"]
+    then ["${colors.boldWhite "${option}:"} ${value}"]
     else
       [option]
       ++ (
