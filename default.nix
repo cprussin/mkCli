@@ -55,7 +55,7 @@
           ]
           else getCommands "${prefix'} ${key}" value
       );
-    color = builtins.elemAt commandColors;
+    color = index: builtins.elemAt commandColors (lib.mod index (builtins.length commandColors));
     prefixStr = pos: prefix:
       ((color pos) (exactWidthString 20 prefix)) + (colors.boldWhite " │ ");
     allCommands =
