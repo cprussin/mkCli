@@ -10,17 +10,17 @@
   util = callPackage ./util.nix {};
 
   mkCase = key: value:
-    if builtins.isList value
-    then ["${key})"] ++ (util.indent (value ++ [";;"]))
-    else ["${key}) ${value} ;;"];
+    if lib.isStringLike value
+    then ["${key}) ${value} ;;"]
+    else ["${key})"] ++ (util.indent (value ++ [";;"]));
 
   mkSubcommandHandler = prefix: subcommand: value: let
     prefixWithSubcommand = "${prefix} ${subcommand}";
   in
     mkCase subcommand (
-      if builtins.isAttrs value
-      then mkOptions prefixWithSubcommand value
-      else mkRunCommand value (styles.defaultCommandColor prefixWithSubcommand)
+      if lib.isStringLike value
+      then mkRunCommand value (styles.defaultCommandColor prefixWithSubcommand)
+      else mkOptions prefixWithSubcommand value
     );
 
   mkOptions = prefix: options: let

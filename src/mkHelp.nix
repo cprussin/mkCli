@@ -1,13 +1,16 @@
-{callPackage}: let
+{
+  callPackage,
+  lib,
+}: let
   util = callPackage ./util.nix {};
   styles = callPackage ./styles.nix {};
 
   echo = str: "echo -e '${str}'";
 
   mkHelpOption = option: value:
-    if builtins.isAttrs value
-    then [(styles.leaf option)] ++ (mkHelpOptions value)
-    else ["${styles.branch option}: ${styles.command value}"];
+    if lib.isStringLike value
+    then ["${styles.branch option}: ${styles.command value}"]
+    else [(styles.leaf option)] ++ (mkHelpOptions value);
 
   mkHelpOptions = options:
     util.indent (util.concatMapAttrsToList mkHelpOption options);
