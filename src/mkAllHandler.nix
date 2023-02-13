@@ -10,7 +10,7 @@
   getSubcommandsWithNames = prefix: subcommand: value: let
     prefixWithSubcommand = "${prefix} ${subcommand}";
   in
-    if lib.isStringLike value
+    if lib.isString value || lib.isStorePath value
     then [(lib.nameValuePair prefixWithSubcommand value)]
     else getCommandsWithNames prefixWithSubcommand value;
 

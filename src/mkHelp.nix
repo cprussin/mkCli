@@ -8,7 +8,7 @@
   echo = str: "echo -e '${str}'";
 
   mkHelpOption = option: value:
-    if lib.isStringLike value
+    if lib.isString value || lib.isStorePath value
     then ["${styles.branch option}: ${styles.command value}"]
     else [(styles.leaf option)] ++ (mkHelpOptions value);
 

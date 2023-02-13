@@ -10,7 +10,7 @@
   util = callPackage ./util.nix {};
 
   mkCase = key: value:
-    if lib.isStringLike value
+    if lib.isString value || lib.isStorePath value
     then ["${key}) ${value} ;;"]
     else ["${key})"] ++ (util.indent (value ++ [";;"]));
 
@@ -18,7 +18,7 @@
     prefixWithSubcommand = "${prefix} ${subcommand}";
   in
     mkCase subcommand (
-      if lib.isStringLike value
+      if lib.isString value || lib.isStorePath value
       then mkRunCommand value (styles.defaultCommandColor prefixWithSubcommand)
       else mkOptions prefixWithSubcommand value
     );
