@@ -5,9 +5,9 @@
   echo = str: "echo -e '${str}'";
 
   mkHelpOption = option: value:
-    if builtins.isString value
-    then ["${styles.branch option}: ${styles.command value}"]
-    else [(styles.leaf option)] ++ (mkHelpOptions value);
+    if builtins.isAttrs value
+    then [(styles.leaf option)] ++ (mkHelpOptions value)
+    else ["${styles.branch option}: ${styles.command value}"];
 
   mkHelpOptions = options:
     util.indent (util.concatMapAttrsToList mkHelpOption options);

@@ -10,9 +10,9 @@
   getSubcommandsWithNames = prefix: subcommand: value: let
     prefixWithSubcommand = "${prefix} ${subcommand}";
   in
-    if builtins.isString value
-    then [(lib.nameValuePair prefixWithSubcommand value)]
-    else getCommandsWithNames prefixWithSubcommand value;
+    if builtins.isAttrs value
+    then getCommandsWithNames prefixWithSubcommand value
+    else [(lib.nameValuePair prefixWithSubcommand value)];
 
   getCommandsWithNames = prefix:
     util.concatMapAttrsToList (getSubcommandsWithNames prefix);
