@@ -11,4 +11,6 @@
     builtins.elemAt set (lib.mod index (builtins.length set));
 
   maxSet = lib.fold lib.max 0;
+
+  repeatString = str: count: lib.concatStringsSep "" (lib.genList (_: str) count);
 }

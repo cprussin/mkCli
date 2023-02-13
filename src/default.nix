@@ -3,13 +3,11 @@
   lib,
   writeShellScriptBin,
 }: let
-  colors = callPackage ./colors.nix {};
   mkAllHandler = callPackage ./mkAllHandler.nix {};
   mkHelp = callPackage ./mkHelp.nix {};
   mkRunCommand = callPackage ./mkRunCommand.nix {};
+  styles = callPackage ./styles.nix {};
   util = callPackage ./util.nix {};
-
-  unknownOptionErrorMesage = "${colors.boldRed "Error: Unknown option"} ${colors.lightGrey "$option"}\n";
 
   mkCase = key: value:
     if builtins.isString value
@@ -21,7 +19,7 @@
   in
     mkCase subcommand (
       if builtins.isString value
-      then mkRunCommand value prefixWithSubcommand (-1)
+      then mkRunCommand value (styles.defaultCommandColor prefixWithSubcommand)
       else mkOptions prefixWithSubcommand value
     );
 
@@ -35,7 +33,7 @@
       else mkCase "all|''" (mkAllHandler prefix options');
     help = mkCase "-h|--help|''" (mkHelp prefix options');
     unknownOptionError = mkCase "*" (
-      ["echo -e \"${unknownOptionErrorMesage}\" >&2"]
+      ["echo -e \"${styles.error "Error: Unknown option"} ${styles.errorContext "$option"}\\n\" >&2"]
       ++ (mkHelp prefix options')
       ++ ["exit 1"]
     );
@@ -49,9 +47,4 @@
     ++ ["esac"];
 in
   name: options:
-    writeShellScriptBin name ''
-      set -e
-      set -o pipefail
-
-      ${lib.concatStringsSep "\n" (mkOptions name options)}
-    ''
+    writeShellScriptBin name (lib.concatStringsSep "\n" (mkOptions name options))

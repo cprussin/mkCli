@@ -1,13 +1,13 @@
 {callPackage}: let
-  colors = callPackage ./colors.nix {};
   util = callPackage ./util.nix {};
+  styles = callPackage ./styles.nix {};
 
   echo = str: "echo -e '${str}'";
 
   mkHelpOption = option: value:
     if builtins.isString value
-    then ["${colors.boldWhite "${option}:"} ${value}"]
-    else [option] ++ (mkHelpOptions value);
+    then ["${styles.branch option}: ${styles.command value}"]
+    else [(styles.leaf option)] ++ (mkHelpOptions value);
 
   mkHelpOptions = options:
     util.indent (util.concatMapAttrsToList mkHelpOption options);
@@ -17,7 +17,7 @@ in
       [
         "Usage: ${cmd} <option>"
         ""
-        "Possible options:"
+        (styles.sectionHead "Possible options:")
       ]
       ++ (mkHelpOptions options)
     )
