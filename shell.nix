@@ -41,6 +41,7 @@ in
   pkgs.mkShell {
     buildInputs = [
       pkgs.git
+      pkgs.niv
       cli
     ];
   }
