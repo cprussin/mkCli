@@ -82,6 +82,17 @@
   mkEndSummary = commandsByName:
     ["echo -e \" ${styles.sectionHead "Summary"}\""]
     ++ (lib.concatLists (lib.imap0 summarize (builtins.attrNames commandsByName)));
+
+  mkExitFor = pos: [
+    "if [ \$${statusEnvVar pos} != 0 ]; then"
+    "  exit \$${statusEnvVar pos}"
+    "fi"
+  ];
+
+  mkExit = commandsByName:
+    lib.concatLists (
+      lib.imap0 (pos: _: mkExitFor pos) (builtins.attrNames commandsByName)
+    );
 in
   prefix: options: let
     commandsByName = builtins.listToAttrs (getCommandsWithNames prefix options);
@@ -92,3 +103,4 @@ in
     ++ (mkWaits commandsByName)
     ++ separator
     ++ (mkEndSummary commandsByName)
+    ++ (mkExit commandsByName)
