@@ -12,8 +12,10 @@
     then ["${styles.branch option}: ${styles.command value}"]
     else [(styles.leaf option)] ++ (mkHelpOptions value);
 
-  mkHelpOptions = options:
-    util.indent (util.concatMapAttrsToList mkHelpOption options);
+  mkHelpOptions = options: let
+    options' = builtins.removeAttrs options ["_noAll"];
+  in
+    util.indent (util.concatMapAttrsToList mkHelpOption options');
 in
   cmd: options:
     map echo (
