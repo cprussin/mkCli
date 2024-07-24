@@ -19,7 +19,7 @@
   in
     mkCase subcommand (
       if lib.isString value || lib.isStorePath value
-      then mkRunCommand value (styles.defaultCommandColor prefixWithSubcommand)
+      then mkRunCommand false value (styles.defaultCommandColor prefixWithSubcommand)
       else mkOptions prefixWithSubcommand value
     );
 

@@ -53,7 +53,7 @@
       ]
       ++ (
         util.indent (
-          mkRunCommand commandsByName."${name}" (prefixStyle pos (padName name))
+          mkRunCommand true commandsByName."${name}" (prefixStyle pos (padName name))
         )
       )
       ++ [
