@@ -9,4 +9,4 @@ in
       "${cmd} \"$@\" 2>&1 | sed \"s/^/$(printf \"${prefixStr prefix}\")/\""
       "exit \${PIPESTATUS[0]}"
     ]
-    else ["${cmd}"]
+    else ["${cmd} \"$@\""]
